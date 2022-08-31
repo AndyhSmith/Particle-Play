@@ -1,0 +1,14 @@
+body {
+    margin: 0px;
+}
+
+canvas {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+}
+
+@font-face {
+    font-family: 'pixel';
+    src: url('./fonts/PrStart.ttf');
+}
