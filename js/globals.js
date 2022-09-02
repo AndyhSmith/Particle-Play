@@ -30,3 +30,13 @@ var mouseY = 0
 const IMG_PATH = "res/"
 var IMG_BUTTON = new Image;
 IMG_BUTTON.src = IMG_PATH + "button.png";
+
+// Particles
+const RANDOM_START_BORDER_BUFFER = 50
+const PARTICLE_SIZE = 5
+
+var particles = []
+var yellow = null
+var red = null
+var green = null
+var blue = null
