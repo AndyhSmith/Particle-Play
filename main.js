@@ -163,11 +163,29 @@ function deannaRule() {
 
 function update() {
     // greenAtom()
-    //dragonFly()
+    // dragonFly()
     // unstableParticle()
     // stableGrandParticle()
     // simpleBlue()
-    deannaRule()
+    // deannaRule()
+    let mousePart = [createParticle(mouseX, mouseY, 1)]
+
+    for (let i = 0; i < 25; i++) {
+        // if (forces[i] != 0) {
+            rule(pList[particleIndex[i][0]], pList[particleIndex[i][1]], forces[i+1])
+            if (mouseActive) {
+            rule(pList[particleIndex[i][0]],mousePart,mouseForce)
+            }
+        // }
+    }
+    for (let i = 0; i < 25; i++) {
+        updateRule(pList[particleIndex[i][0]], pList[particleIndex[i][1]], forces[i+1])
+        if (mouseActive) {
+        updateRule(pList[particleIndex[i][0]],mousePart,mouseForce)
+        }
+    }
+    
+    
 }
 
 function gameLoop() {
@@ -183,6 +201,7 @@ function gameLoop() {
 //----------------------------------------------------------------------------------------------------
 
 function rule(p1, p2, g) {
+    g = -g
     for (let i = 0; i < p1.length; i++) {
         let fx = 0;
         let fy = 0;
@@ -191,10 +210,31 @@ function rule(p1, p2, g) {
         for (let j = 0; j < p2.length; j++) {
             a = p1[i]
             b = p2[j]
-            let dx = a.x-b.x;
-            let dy = a.y - b.y;
+            
+
+            let tbx = b.x
+            let tby = b.y
+            // Screen Wrap attempt
+            // if (a.x < cW * .25 && b.x > cW * .75) {
+            //     tbx -= cW
+            // }
+            // if (a.x > cW * .75 && b.x < cW * .25) {
+            //     tbx += cW
+            // }
+
+            
+            // if (a.y < cH * .25 && b.y > cH * .75) {
+            //     tby -= cH
+            // }
+            // if (a.y > cH * .75 && b.y < cH * .25) {
+            //     tby += cH
+            // }
+
+            
+            let dx = a.x-tbx;
+            let dy = a.y-tby;
             let d = Math.sqrt(dx*dx + dy*dy);
-            if (d > 0 && d < cW / 5) {
+            if (d > 0 && d <  (cW / CELL_SIZE) ) {
                 let F = g * 1 / d
                 fx += (F * dx)
                 fy += (F * dy)
@@ -206,24 +246,53 @@ function rule(p1, p2, g) {
         a.x += a.vx
         a.y += a.vy
 
-        if (a.x <= RANDOM_START_BORDER_BUFFER) {
-            a.vx = Math.abs(a.vx)
+        if (false) {
+            if (a.x <= 0) {
+                a.x = cW + 10
+            } 
+            else if ( a.x > cW) {
+                a.x = 0 - 10
+            }
+            if (a.y <= 0) {
+                a.y = cH + 10
+            } 
+            else if ( a.y > cH) {
+                a.y = 0 - 10
+            }
+        }
+        else  {
+            if (a.x <= RANDOM_START_BORDER_BUFFER) {
+                a.vx = Math.abs(a.vx)
+                // a.x = RANDOM_START_BORDER_BUFFER
+            } 
+            else if ( a.x >= cW - RANDOM_START_BORDER_BUFFER) {
+                a.vx = -Math.abs(a.vx)
+                // a.x = cW - RANDOM_START_BORDER_BUFFER
+            }
+            if (a.y <= RANDOM_START_BORDER_BUFFER) {
+                a.vy = Math.abs(a.vy)
+                // a.y = RANDOM_START_BORDER_BUFFER
+            }
+            else if (a.y >= cH - RANDOM_START_BORDER_BUFFER) {
+                a.vy = -Math.abs(a.vy)
+                // a.y = cH - RANDOM_START_BORDER_BUFFER
+            }
         } 
-        else if ( a.x >= cW - RANDOM_START_BORDER_BUFFER) {
-            a.vx = -Math.abs(a.vx)
-        }
-        if (a.y <= RANDOM_START_BORDER_BUFFER) {
-            a.vy = Math.abs(a.vy)
-        }
-        else if (a.y >= cH - RANDOM_START_BORDER_BUFFER) {
-            a.vy = -Math.abs(a.vy)
-        }
+        // console.log(a.vx)
+        
+    }
+}
+
+
+function updateRule(p1, p2, g) {
+    for (let i = 0; i < p1.length; i++) {
+        a = p1[i]
         
     }
 }
 
 function drawRectangle(x,y,c,s) {
-    ctxf.fillStyle = c;
+    ctxf.fillStyle = colors[c];
     ctxf.fillRect(x,y,s,s);
 }
 
@@ -233,9 +302,12 @@ function createParticle(x,y,c) {
 
 function randomLoc() {
     // Picks a random location on screen with a buffer
-    let randomX = (Math.random() * (cW - (RANDOM_START_BORDER_BUFFER)) + (RANDOM_START_BORDER_BUFFER / 2)) 
-    let randomY = (Math.random() * (cH - (RANDOM_START_BORDER_BUFFER)) + (RANDOM_START_BORDER_BUFFER / 2)) 
-    return [randomX, randomY]
+    // let randomX = (Math.random() * (cW - (RANDOM_START_BORDER_BUFFER)) + (RANDOM_START_BORDER_BUFFER / 2)) 
+    // let randomY = (Math.random() * (cH - (RANDOM_START_BORDER_BUFFER)) + (RANDOM_START_BORDER_BUFFER / 2)) 
+    // return [randomX, randomY]
+
+    //random location
+    return [Math.random() * cW, Math.random() * cH]
 }
 
 function createGroup(number, color) {
@@ -260,10 +332,15 @@ function main() {
     ctxb = $$getCanvasContextWithID(CAN_ID_B);
 
     particles = [];
-    yellow = createGroup(1000, "yellow");
-    red = createGroup(400, "red");
-    green = createGroup(200, "green");
-    blue = createGroup(200, "blue");
+    pList[1] = createGroup(Math.floor(Math.random() * 500), 1);
+    pList[2] = createGroup(Math.floor(Math.random() * 500), 2);
+    pList[3] = createGroup(Math.floor(Math.random() * 500), 3);
+    pList[4] = createGroup(Math.floor(Math.random() * 500), 4);
+    pList[5] = createGroup(Math.floor(Math.random() * 500), 5);
+   
+
+
+    setupColors()
     
     // createButton(10,100,50,100,"red","","Red Button",16,bCRed,bHRed,defaultRemoveHover)
 
@@ -275,4 +352,115 @@ function main() {
 }
 
 
+//----------------------------------------------------------------------------------------------------
+//   Sliders
+//----------------------------------------------------------------------------------------------------
 
+// Move Slider
+ for (let i = 1; i <= 25; i++) {
+    document.getElementById("slide" + i).oninput = function(){
+        document.getElementById("inp" + i).value = document.getElementById("slide" + i).value
+        forces[i] = document.getElementById("slide" + i).value
+    }
+     
+ }
+
+ // mouse force
+ document.getElementById("slide100").oninput = function(){
+    document.getElementById("inp100").value = document.getElementById("slide100").value
+    mouseForce = document.getElementById("slide100").value
+}
+
+
+ function recenter(slider) {
+    if (slider == 100) {
+        document.getElementById("slide100").value = 0
+        document.getElementById("inp100").value = 0
+        mouseForce = 0
+        return
+    }
+
+
+    document.getElementById("slide" + slider).value = 0
+    document.getElementById("inp" + slider).value = 0
+    forces[slider] = 0
+ }
+
+ function inpChange(change) {
+    let val = document.getElementById("inp" + change).value 
+    document.getElementById("slide" + change).value = val
+    forces[change] = val
+ }
+
+
+
+document.getElementById("cs1").addEventListener("change", watchColorPicker1, false);
+function watchColorPicker1(event) {
+    updateColor(1)
+}
+document.getElementById("cs2").addEventListener("change", watchColorPicker2, false);
+function watchColorPicker2(event) {
+    updateColor(2)
+}
+document.getElementById("cs3").addEventListener("change", watchColorPicker3, false);
+function watchColorPicker3(event) {
+    updateColor(3)
+}
+document.getElementById("cs4").addEventListener("change", watchColorPicker4, false);
+function watchColorPicker4(event) {
+    updateColor(4)
+}
+document.getElementById("cs5").addEventListener("change", watchColorPicker5, false);
+function watchColorPicker5(event) {
+    updateColor(5)
+}
+
+function updateColor(colorTag) {
+    colors[colorTag] = document.getElementById("cs" + colorTag).value 
+    let temp = document.getElementsByClassName("c" + colorTag);
+    for(let item of temp) {
+        item.style.backgroundColor = colors[colorTag]
+    }
+
+}
+
+function setupColors() {
+    for (let i = 1; i <= 5; i++) {
+        document.getElementById("cs" + i).value = colors[i]
+        updateColor(i)
+    }
+}
+
+function randomForces() {
+    for (let i = 1; i <=25; i++) {
+        if (Math.random() < .5) {
+            forces[i] = (Math.random() - .5)  * 3
+            document.getElementById("slide" + i).value = forces[i]
+            document.getElementById("inp" + i).value = Math.round(forces[i] * 10) / 10
+        }
+        
+    }
+}
+
+randomForces()
+
+
+window.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    }
+  
+    if (event.key == "a") {
+        mouseActive = true
+    }
+})
+
+window.addEventListener("keyup", (event) => {
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    }
+  
+    if (event.key == "a") {
+        mouseActive = false
+    }
+})

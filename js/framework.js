@@ -121,7 +121,7 @@ function handleMove(event) {
 //----------------------------------------------------------------------------------------------------
 function drawFPS() {
     if (fpsShow) {
-        ctxf.fillStyle = "black"
+        ctxf.fillStyle = "white"
         ctxf.textAlign = 'right';
         ctxf.font = '16px sans-serif';
         ctxf.fillText("FPS:" + fps, cW - 20, 20);

@@ -32,11 +32,85 @@ var IMG_BUTTON = new Image;
 IMG_BUTTON.src = IMG_PATH + "button.png";
 
 // Particles
-const RANDOM_START_BORDER_BUFFER = 50
+var RANDOM_START_BORDER_BUFFER = 20
 const PARTICLE_SIZE = 5
+const CELL_SIZE = Math.floor(Math.random() * 4) + 3
 
 var particles = []
-var yellow = null
-var red = null
-var green = null
-var blue = null
+
+var mouseForce = 1;
+var mouseActive = false;
+
+
+
+var colors = {
+    "1":"#3853F1",
+    "2":"#F6E54C",
+    "3":"#39D33C",
+    "4":"#FFFFFF",
+    "5":"#EF3029",
+}
+
+var forces = {
+    "1":0,
+    "2":0,
+    "3":0,
+    "4":0,
+    "5":0,
+    "6":0,
+    "7":0,
+    "8":0,
+    "9":0,
+    "10":0,
+    "11":0,
+    "12":0,
+    "13":0,
+    "14":0,
+    "15":0,
+    "16":0,
+    "17":0,
+    "18":0,
+    "19":0,
+    "20":0,
+    "21":0,
+    "22":0,
+    "23":0,
+    "24":0,
+    "25":0,
+}
+
+var pList = {
+    "1":[],
+    "2":[],
+    "3":[],
+    "4":[],
+    "5":[],
+}
+
+var particleIndex = [
+    [1, 1],
+    [1, 2],
+    [1, 3],
+    [1, 4],
+    [1, 5],
+    [2, 1],
+    [2, 2],
+    [2, 3],
+    [2, 4],
+    [2, 5],
+    [3, 1],
+    [3, 2],
+    [3, 3],
+    [3, 4],
+    [3, 5],
+    [4, 1],
+    [4, 2],
+    [4, 3],
+    [4, 4],
+    [4, 5],
+    [5, 1],
+    [5, 2],
+    [5, 3],
+    [5, 4],
+    [5, 5],
+]
