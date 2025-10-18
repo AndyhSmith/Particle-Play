@@ -1,3 +1,7 @@
+// main.js
+
+const mouseParticle = { x: 0, y: 0, vx: 0, vy: 0, c: 1 };
+
 //----------------------------------------------------------------------------------------------------
 //   B U T T O N   C A L L B A C K S
 //----------------------------------------------------------------------------------------------------
@@ -74,10 +78,16 @@ function handleMouseMove() {
 // Draw Foreground
 function drawFront() {
     ctxf.clearRect(0, 0, cW, cH);
-    // drawButtons()
 
-    for (let i = 0; i < particles.length; i++) {
-        drawRectangle(particles[i].x, particles[i].y, particles[i].c, PARTICLE_SIZE);
+    // Batch draw by color to reduce state churn & calls
+    for (let colorId = 1; colorId <= 5; colorId++) {
+        const list = pList[colorId];
+        if (!list) continue;
+        ctxf.fillStyle = colors[colorId];
+        for (let i = 0; i < list.length; i++) {
+            const p = list[i];
+            ctxf.fillRect(p.x, p.y, PARTICLE_SIZE, PARTICLE_SIZE);
+        }
     }
 
     drawFPS();
@@ -153,28 +163,68 @@ function deannaRule() {
     rule(blue, blue, 0.1);
 }
 
-function update() {
-    // greenAtom()
-    // dragonFly()
-    // unstableParticle()
-    // stableGrandParticle()
-    // simpleBlue()
-    // deannaRule()
-    let mousePart = [createParticle(mouseX, mouseY, 1)];
 
-    for (let i = 0; i < 25; i++) {
-        // if (forces[i] != 0) {
-        rule(pList[particleIndex[i][0]], pList[particleIndex[i][1]], forces[i + 1]);
-        if (mouseActive) {
-            rule(pList[particleIndex[i][0]], mousePart, mouseForce);
-        }
-        // }
+// ADD: build a grid for a single color group
+function buildGridForGroup(group, cellSize) {
+  const grid = new Map(); // key: "cx|cy" -> array of particle refs
+  const inv = 1 / cellSize;
+  for (let i = 0; i < group.length; i++) {
+    const p = group[i];
+    const cx = (p.x * inv) | 0;
+    const cy = (p.y * inv) | 0;
+    const key = cx + "|" + cy;
+    let bucket = grid.get(key);
+    if (!bucket) {
+      bucket = [];
+      grid.set(key, bucket);
     }
+    bucket.push(p);
+  }
+  return grid;
+}
+
+// ADD: build all grids once per frame
+function buildAllGrids(cellSize) {
+  spatial.cellSize = cellSize;
+  spatial.grids[1] = buildGridForGroup(pList[1], cellSize);
+  spatial.grids[2] = buildGridForGroup(pList[2], cellSize);
+  spatial.grids[3] = buildGridForGroup(pList[3], cellSize);
+  spatial.grids[4] = buildGridForGroup(pList[4], cellSize);
+  spatial.grids[5] = buildGridForGroup(pList[5], cellSize);
+}
+
+// ADD: iterate neighbors of (x,y) in the 3x3 surrounding cells of groupId
+function forEachNeighbor(groupId, x, y, fn) {
+  const grid = spatial.grids[groupId];
+  if (!grid) return;
+  const cs = spatial.cellSize, inv = 1 / cs;
+  const cx = (x * inv) | 0, cy = (y * inv) | 0;
+  for (let gy = cy - 1; gy <= cy + 1; gy++) {
+    for (let gx = cx - 1; gx <= cx + 1; gx++) {
+      const bucket = grid.get(gx + "|" + gy);
+      if (!bucket) continue;
+      for (let i = 0; i < bucket.length; i++) fn(bucket[i]);
+    }
+  }
+}
+
+
+function update() {
+    // Prepare mouse particle without allocating arrays every frame
+    mouseParticle.x = mouseX;
+    mouseParticle.y = mouseY;
+
+    // Build spatial grids once per frame based on your interaction radius
+    const R = cW / CELL_SIZE;        // your current cutoff radius
+    buildAllGrids(R);
+
+    // Run rules using spatial queries (no O(n^2) over full lists)
     for (let i = 0; i < 25; i++) {
-        updateRule(pList[particleIndex[i][0]], pList[particleIndex[i][1]], forces[i + 1]);
-        if (mouseActive) {
-            updateRule(pList[particleIndex[i][0]], mousePart, mouseForce);
-        }
+        const aId = particleIndex[i][0];
+        const bId = particleIndex[i][1];
+        const g   = forces[i + 1];
+        if (g !== 0) rule(pList[aId], bId, g, R);
+        if (mouseActive) rule(pList[aId], /*bId=*/100, mouseForce, R); // 100 = special mouse group
     }
 }
 
@@ -192,96 +242,76 @@ function gameLoop() {
 //   P A R T I C L E S
 //----------------------------------------------------------------------------------------------------
 
-function rule(p1, p2, g) {
-    g = -g;
+// ADD: reuse (no per-frame allocations)
+// const mouseParticle = createParticle(0, 0, 1);
+
+function rule(p1, p2Id, g, R) {
+    const R2 = R * R;             // compare squared distance
+    const cs = spatial.cellSize;
+    const invR = 1 / R;           // rough scale if you want, optional
+
+    // mouse as "group 100"
+    const useMouse = (p2Id === 100);
+
     for (let i = 0; i < p1.length; i++) {
-        let fx = 0;
-        let fy = 0;
-        let a = null;
-        let b = null;
-        for (let j = 0; j < p2.length; j++) {
-            a = p1[i];
-            b = p2[j];
-            if (a == null) {
-                continue;
-            }
-            if (b == null) {
-                continue;
-            }
+        const a = p1[i];
+        let fx = 0, fy = 0;
 
-            let tbx = b.x;
-            let tby = b.y;
-            // Screen Wrap attempt
-            // if (a.x < cW * .25 && b.x > cW * .75) {
-            //     tbx -= cW
-            // }
-            // if (a.x > cW * .75 && b.x < cW * .25) {
-            //     tbx += cW
-            // }
-
-            // if (a.y < cH * .25 && b.y > cH * .75) {
-            //     tby -= cH
-            // }
-            // if (a.y > cH * .75 && b.y < cH * .25) {
-            //     tby += cH
-            // }
-
-            let dx = a.x - tbx;
-            let dy = a.y - tby;
-            let d = Math.sqrt(dx * dx + dy * dy);
-            if (d > 0 && d < cW / CELL_SIZE) {
-                let F = (g * 1) / d;
+        if (useMouse) {
+            const b = mouseParticle;
+            let dx = a.x - b.x, dy = a.y - b.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 > 0 && d2 < R2) {
+                const invd = 1 / Math.sqrt(d2);
+                const F = (-g) * invd; // original code uses g = -g
                 fx += F * dx;
                 fy += F * dy;
             }
+        } else {
+            // Iterate only neighbors from spatial grid
+            forEachNeighbor(p2Id, a.x, a.y, (b) => {
+                // Skip self when p1 === p2
+                if (a === b) return;
+                let dx = a.x - b.x, dy = a.y - b.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 > 0 && d2 < R2) {
+                    const invd = 1 / Math.sqrt(d2);
+                    const F = (-g) * invd;
+                    fx += F * dx;
+                    fy += F * dy;
+                }
+            });
         }
-        if (a == null) {
-            continue;
-        }
-        if (b == null) {
-            continue;
-        }
+
         a.vx = (a.vx + fx) * 0.5;
         a.vy = (a.vy + fy) * 0.5;
         a.x += a.vx;
         a.y += a.vy;
 
-        if (false) {
-            if (a.x <= 0) {
-                a.x = cW + 10;
-            } else if (a.x > cW) {
-                a.x = 0 - 10;
-            }
-            if (a.y <= 0) {
-                a.y = cH + 10;
-            } else if (a.y > cH) {
-                a.y = 0 - 10;
-            }
-        } else {
-            if (a.x <= RANDOM_START_BORDER_BUFFER) {
-                a.vx = Math.abs(a.vx);
-                // a.x = RANDOM_START_BORDER_BUFFER
-            } else if (a.x >= cW - RANDOM_START_BORDER_BUFFER) {
-                a.vx = -Math.abs(a.vx);
-                // a.x = cW - RANDOM_START_BORDER_BUFFER
-            }
-            if (a.y <= RANDOM_START_BORDER_BUFFER) {
-                a.vy = Math.abs(a.vy);
-                // a.y = RANDOM_START_BORDER_BUFFER
-            } else if (a.y >= cH - RANDOM_START_BORDER_BUFFER) {
-                a.vy = -Math.abs(a.vy);
-                // a.y = cH - RANDOM_START_BORDER_BUFFER
-            }
+        // wall bounces as before
+        if (a.x <= RANDOM_START_BORDER_BUFFER) {
+            a.vx = Math.abs(a.vx);
+        } else if (a.x >= cW - RANDOM_START_BORDER_BUFFER) {
+            a.vx = -Math.abs(a.vx);
         }
-        // console.log(a.vx)
+        if (a.y <= RANDOM_START_BORDER_BUFFER) {
+            a.vy = Math.abs(a.vy);
+        } else if (a.y >= cH - RANDOM_START_BORDER_BUFFER) {
+            a.vy = -Math.abs(a.vy);
+        }
     }
 }
 
-function updateRule(p1, p2, g) {
-    for (let i = 0; i < p1.length; i++) {
-        a = p1[i];
-    }
-}
+
+
+
+
+
+// function updateRule(p1, p2, g) {
+//     for (let i = 0; i < p1.length; i++) {
+//         a = p1[i];
+//     }
+// }
 
 function drawRectangle(x, y, c, s) {
     ctxf.fillStyle = colors[c];
@@ -327,11 +357,11 @@ function main() {
 function setUpParticles() {
     particles = [];
     pList = [];
-    pList[1] = createGroup(Math.floor(Math.random() * 500), 1);
-    pList[2] = createGroup(Math.floor(Math.random() * 500), 2);
-    pList[3] = createGroup(Math.floor(Math.random() * 500), 3);
-    pList[4] = createGroup(Math.floor(Math.random() * 500), 4);
-    pList[5] = createGroup(Math.floor(Math.random() * 500), 5);
+    pList[1] = createGroup(PARTICLES_PER_GROUP, 1);
+    pList[2] = createGroup(PARTICLES_PER_GROUP, 2);
+    pList[3] = createGroup(PARTICLES_PER_GROUP, 3);
+    pList[4] = createGroup(PARTICLES_PER_GROUP, 4);
+    pList[5] = createGroup(PARTICLES_PER_GROUP, 5);
 
     setupColors();
 }
@@ -353,6 +383,39 @@ document.getElementById("slide100").oninput = function () {
     document.getElementById("inp100").value = document.getElementById("slide100").value;
     mouseForce = document.getElementById("slide100").value;
 };
+
+
+
+
+
+// Particles-per-color slider
+document.getElementById("slideCount").oninput = function () {
+    document.getElementById("inpCount").value = this.value;
+    PARTICLES_PER_GROUP = parseInt(this.value) || 0;
+    setUpParticles();
+};
+function countInpChange() {
+    let v = parseInt(document.getElementById("inpCount").value) || 0;
+    document.getElementById("slideCount").value = v;
+    PARTICLES_PER_GROUP = v;
+    setUpParticles();
+}
+
+// Particle size slider
+document.getElementById("slideSize").oninput = function () {
+    document.getElementById("inpSize").value = this.value;
+    PARTICLE_SIZE = parseInt(this.value) || 1;
+};
+function sizeInpChange() {
+    let v = parseInt(document.getElementById("inpSize").value) || 1;
+    document.getElementById("slideSize").value = v;
+    PARTICLE_SIZE = v;
+}
+
+
+
+
+
 
 function recenter(slider) {
     if (slider == 100) {
@@ -450,7 +513,7 @@ window.addEventListener("keyup", (event) => {
 //   Hide Show Settings
 //----------------------------------------------------------------------------------------------------
 
-let settings1 = 1;
+let settings1 = 0;
 function toggleSettings() {
     if (settings1) {
         document.getElementById("settings1").style.display = "none";
@@ -461,3 +524,5 @@ function toggleSettings() {
     }
     // document.getElementById("settings1").style.display = "none";
 }
+
+

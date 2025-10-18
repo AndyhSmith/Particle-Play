@@ -1,3 +1,5 @@
+// globals.js
+
 const CAN_ID_F = "myCanvasFront" // Canvas ID Foreground
 const CAN_ID_B = "myCanvasBack" // Canvas ID Background
 
@@ -33,7 +35,8 @@ IMG_BUTTON.src = IMG_PATH + "button.png";
 
 // Particles
 var RANDOM_START_BORDER_BUFFER = 20
-const PARTICLE_SIZE = 5
+let PARTICLE_SIZE = 5
+let PARTICLES_PER_GROUP = 200
 const CELL_SIZE = Math.floor(Math.random() * 4) + 3
 
 var particles = []
@@ -41,7 +44,10 @@ var particles = []
 var mouseForce = 1;
 var mouseActive = false;
 
-
+let spatial = {
+  cellSize: 80,   // will be set each frame from your interaction radius
+  grids: Array(6).fill(null) // index 1..5 for pList groups
+};
 
 var colors = {
     "1":"#3853F1",
@@ -114,3 +120,5 @@ var particleIndex = [
     [5, 4],
     [5, 5],
 ]
+
+

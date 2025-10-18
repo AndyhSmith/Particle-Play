@@ -1,3 +1,6 @@
+// framework.js
+
+
 function $$getCanvasContextWithID(canvasID) {
     let c = document.getElementById(canvasID);
     c.width = document.body.clientWidth; 

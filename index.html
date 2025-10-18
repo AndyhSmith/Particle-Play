@@ -1,3 +1,4 @@
+<!-- index.html -->
 <html>
 <head>
     <meta charset="utf-8">
@@ -6,291 +7,324 @@
     <link rel="stylesheet" href="main.css">
 </head>
 
-
-<body onload="main()" onresize="resize()"  onmousedown="onStartClick(event)"  onmousemove="handleMove(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)">
+<body onload="main()" onresize="resize()" onmousedown="onStartClick(event)" onmousemove="handleMove(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)">
+    <!-- canvases stay at the back -->
     <canvas id="myCanvasBack"></canvas>
     <canvas id="myCanvasFront"></canvas>
     <canvas id="myCanvasStats"></canvas>
-    <div id="button-container">
-        <button onclick="toggleSettings()">Settings</button>
-        <button onclick="randomForces()">Random</button>
-        <!-- <button onclick="toggleSettings()">Preset</button> -->
-        <button onclick="setUpParticles()">Disperse</button>
+
+    <!-- top bar (same IDs/handlers, just nicer UI) -->
+    <div class="topbar" id="button-container">
+        <div class="left">
+            <button class="primary" onclick="toggleSettings()">Settings</button>
+            <button onclick="randomForces()">Random</button>
+            <button onclick="setUpParticles()">Disperse</button>
+        </div>
+        <div class="right hint">tip: press “a” to attract/repel with the mouse</div>
     </div>
+
+    <!-- SETTINGS DRAWER (keeps all original ids/inputs so JS continues to work) -->
     <div id="settings1">
-        
+        <!-- optional headline -->
+        <div class="panel-title">Controls</div>
+
+        <!-- particles-per-color & particle-size sliders (already wired in your JS if you added them) -->
         <div class="slider-container">
-            <input id="inp100" class="slider-input" value="1" oninput="inpChange(100)"></input>
+            <input id="inpCount" class="slider-input" value="200" oninput="countInpChange()">
+            <input id="slideCount" class="slider" step="10" type="range" value="200" min="0" max="1000">
+            <div class="color-container">Particles / color</div>
+        </div>
+
+        <div class="slider-container">
+            <input id="inpSize" class="slider-input" value="5" oninput="sizeInpChange()">
+            <input id="slideSize" class="slider" step="1" type="range" value="5" min="1" max="20">
+            <div class="color-container">Particle size</div>
+        </div>
+
+        <!-- mouse force -->
+        <div class="slider-container">
+            <input id="inp100" class="slider-input" value="1" oninput="inpChange(100)">
             <input id="slide100" class="slider" step="0.1" type="range" value="1" min="-1" max="1">
-            <div class="color-container" onclick="recenter(101)" style="margin-top: 5px;margin-right: 3px;">
-                <img src="res/whitemouse.png" style="width: 10px;">
-                + A
-                <!-- <div class="arrow-container"></div>
-                <div class="color rainbow"></div> -->
+            <div class="color-container" onclick="recenter(101)">
+                <img src="res/whitemouse.png" style="width: 10px; vertical-align: middle;">
+                <span class="label">+ A</span>
             </div>
         </div>
 
-
-
-
-
+        <!-- ORIGINAL 25 SLIDERS (unchanged markup/ids) -->
         <div class="slider-container">
-            <input id="inp1" class="slider-input" value="0" oninput="inpChange(1)"></input>
+            <input id="inp1" class="slider-input" value="0" oninput="inpChange(1)">
             <input id="slide1" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(1)">
-                <div class="color c1"></div> 
+                <div class="color c1"></div>
                 <div class="arrow-container"></div>
                 <div class="color c1"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp2" class="slider-input" value="0" oninput="inpChange(2)"></input>
+            <input id="inp2" class="slider-input" value="0" oninput="inpChange(2)">
             <input id="slide2" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(2)">
-                <div class="color c1"></div> 
+                <div class="color c1"></div>
                 <div class="arrow-container"></div>
                 <div class="color c2"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp3" class="slider-input" value="0" oninput="inpChange(3)"></input>
+            <input id="inp3" class="slider-input" value="0" oninput="inpChange(3)">
             <input id="slide3" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(3)">
-                <div class="color c1"></div> 
+                <div class="color c1"></div>
                 <div class="arrow-container"></div>
                 <div class="color c3"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp4" class="slider-input" value="0" oninput="inpChange(4)"></input>
+            <input id="inp4" class="slider-input" value="0" oninput="inpChange(4)">
             <input id="slide4" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(4)">
-                <div class="color c1"></div> 
+                <div class="color c1"></div>
                 <div class="arrow-container"></div>
                 <div class="color c4"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp5" class="slider-input" value="0" oninput="inpChange(5)"></input>
+            <input id="inp5" class="slider-input" value="0" oninput="inpChange(5)">
             <input id="slide5" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(5)">
-                <div class="color c1"></div> 
+                <div class="color c1"></div>
                 <div class="arrow-container"></div>
                 <div class="color c5"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp6" class="slider-input" value="0" oninput="inpChange(6)"></input>
+            <input id="inp6" class="slider-input" value="0" oninput="inpChange(6)">
             <input id="slide6" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(6)">
-                <div class="color c2"></div> 
+                <div class="color c2"></div>
                 <div class="arrow-container"></div>
                 <div class="color c1"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp7" class="slider-input" value="0" oninput="inpChange(7)"></input>
+            <input id="inp7" class="slider-input" value="0" oninput="inpChange(7)">
             <input id="slide7" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(7)">
-                <div class="color c2"></div> 
+                <div class="color c2"></div>
                 <div class="arrow-container"></div>
                 <div class="color c2"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp8" class="slider-input" value="0" oninput="inpChange(8)"></input>
+            <input id="inp8" class="slider-input" value="0" oninput="inpChange(8)">
             <input id="slide8" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(8)">
-                <div class="color c2"></div> 
+                <div class="color c2"></div>
                 <div class="arrow-container"></div>
                 <div class="color c3"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp9" class="slider-input" value="0" oninput="inpChange(9)"></input>
+            <input id="inp9" class="slider-input" value="0" oninput="inpChange(9)">
             <input id="slide9" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(9)">
-                <div class="color c2"></div> 
+                <div class="color c2"></div>
                 <div class="arrow-container"></div>
                 <div class="color c4"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp10" class="slider-input" value="0" oninput="inpChange(10)"></input>
+            <input id="inp10" class="slider-input" value="0" oninput="inpChange(10)">
             <input id="slide10" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(10)">
-                <div class="color c2"></div> 
+                <div class="color c2"></div>
                 <div class="arrow-container"></div>
                 <div class="color c5"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp11" class="slider-input" value="0" oninput="inpChange(11)"></input>
+            <input id="inp11" class="slider-input" value="0" oninput="inpChange(11)">
             <input id="slide11" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(11)">
-                <div class="color c3"></div> 
+                <div class="color c3"></div>
                 <div class="arrow-container"></div>
                 <div class="color c1"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp12" class="slider-input" value="0" oninput="inpChange(12)"></input>
+            <input id="inp12" class="slider-input" value="0" oninput="inpChange(12)">
             <input id="slide12" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(12)">
-                <div class="color c3"></div> 
+                <div class="color c3"></div>
                 <div class="arrow-container"></div>
                 <div class="color c2"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp13" class="slider-input" value="0" oninput="inpChange(13)"></input>
+            <input id="inp13" class="slider-input" value="0" oninput="inpChange(13)">
             <input id="slide13" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(13)">
-                <div class="color c3"></div> 
+                <div class="color c3"></div>
                 <div class="arrow-container"></div>
                 <div class="color c3"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp14" class="slider-input" value="0" oninput="inpChange(14)"></input>
+            <input id="inp14" class="slider-input" value="0" oninput="inpChange(14)">
             <input id="slide14" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(14)">
-                <div class="color c3"></div> 
+                <div class="color c3"></div>
                 <div class="arrow-container"></div>
                 <div class="color c4"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp15" class="slider-input" value="0" oninput="inpChange(15)"></input>
+            <input id="inp15" class="slider-input" value="0" oninput="inpChange(15)">
             <input id="slide15" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(15)">
-                <div class="color c3"></div> 
+                <div class="color c3"></div>
                 <div class="arrow-container"></div>
                 <div class="color c5"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp16" class="slider-input" value="0" oninput="inpChange(16)"></input>
+            <input id="inp16" class="slider-input" value="0" oninput="inpChange(16)">
             <input id="slide16" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(16)">
-                <div class="color c4"></div> 
+                <div class="color c4"></div>
                 <div class="arrow-container"></div>
                 <div class="color c1"></div>
             </div>
         </div>
 
         <div class="slider-container">
-            <input id="inp17" class="slider-input" value="0" oninput="inpChange(17)"></input>
+            <input id="inp17" class="slider-input" value="0" oninput="inpChange(17)">
             <input id="slide17" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(17)">
-                <div class="color c4"></div> 
+                <div class="color c4"></div>
                 <div class="arrow-container"></div>
                 <div class="color c2"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp18" class="slider-input" value="0" oninput="inpChange(18)"></input>
+            <input id="inp18" class="slider-input" value="0" oninput="inpChange(18)">
             <input id="slide18" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(18)">
-                <div class="color c4"></div> 
+                <div class="color c4"></div>
                 <div class="arrow-container"></div>
                 <div class="color c3"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp19" class="slider-input" value="0" oninput="inpChange(19)"></input>
+            <input id="inp19" class="slider-input" value="0" oninput="inpChange(19)">
             <input id="slide19" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(19)">
-                <div class="color c4"></div> 
+                <div class="color c4"></div>
                 <div class="arrow-container"></div>
                 <div class="color c4"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp20" class="slider-input" value="0" oninput="inpChange(20)"></input>
+            <input id="inp20" class="slider-input" value="0" oninput="inpChange(20)">
             <input id="slide20" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(20)">
-                <div class="color c4"></div> 
+                <div class="color c4"></div>
                 <div class="arrow-container"></div>
                 <div class="color c5"></div>
             </div>
         </div>
 
         <div class="slider-container">
-            <input id="inp21" class="slider-input" value="0" oninput="inpChange(21)"></input>
+            <input id="inp21" class="slider-input" value="0" oninput="inpChange(21)">
             <input id="slide21" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(21)">
-                <div class="color c5"></div> 
+                <div class="color c5"></div>
                 <div class="arrow-container"></div>
                 <div class="color c1"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp22" class="slider-input" value="0" oninput="inpChange(22)"></input>
+            <input id="inp22" class="slider-input" value="0" oninput="inpChange(22)">
             <input id="slide22" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(22)">
-                <div class="color c5"></div> 
+                <div class="color c5"></div>
                 <div class="arrow-container"></div>
                 <div class="color c2"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp23" class="slider-input" value="0" oninput="inpChange(23)"></input>
+            <input id="inp23" class="slider-input" value="0" oninput="inpChange(23)">
             <input id="slide23" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(23)">
-                <div class="color c5"></div> 
+                <div class="color c5"></div>
                 <div class="arrow-container"></div>
                 <div class="color c3"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp24" class="slider-input" value="0" oninput="inpChange(24)"></input>
+            <input id="inp24" class="slider-input" value="0" oninput="inpChange(24)">
             <input id="slide24" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(24)">
-                <div class="color c5"></div> 
+                <div class="color c5"></div>
                 <div class="arrow-container"></div>
                 <div class="color c4"></div>
             </div>
         </div>
+
         <div class="slider-container">
-            <input id="inp25" class="slider-input" value="0" oninput="inpChange(25)"></input>
+            <input id="inp25" class="slider-input" value="0" oninput="inpChange(25)">
             <input id="slide25" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
             <div class="color-container" onclick="recenter(25)">
-                <div class="color c5"></div> 
+                <div class="color c5"></div>
                 <div class="arrow-container"></div>
                 <div class="color c5"></div>
             </div>
         </div>
-        
 
-        <div class="color-picker-container">
-            <!-- <input class="particle-count" value="0"> -->
-            <input type="color" id="cs1" name="head" class="color-picker" value="#e66465">
+        <!-- COLOR PICKERS (unchanged IDs; grouped for layout only) -->
+        <div class="panel-title" style="margin-top:8px;">Colors</div>
+        <div class="color-pickers-row">
+            <div class="color-picker-container">
+                <input type="color" id="cs1" name="head" class="color-picker" value="#e66465">
+            </div>
+            <div class="color-picker-container">
+                <input type="color" id="cs2" name="head" class="color-picker" value="#e66465">
+            </div>
+            <div class="color-picker-container">
+                <input type="color" id="cs3" name="head" class="color-picker" value="#e66465">
+            </div>
+            <div class="color-picker-container">
+                <input type="color" id="cs4" name="head" class="color-picker" value="#e66465">
+            </div>
+            <div class="color-picker-container">
+                <input type="color" id="cs5" name="head" class="color-picker" value="#e66465">
+            </div>
         </div>
-        <div class="color-picker-container">
-            <!-- <input class="particle-count" value="0"> -->
-            <input type="color" id="cs2" name="head" class="color-picker" value="#e66465">
-        </div>
-        <div class="color-picker-container">
-            <!-- <input class="particle-count" value="0"> -->
-            <input type="color" id="cs3" name="head" class="color-picker" value="#e66465">
-        </div>
-        <div class="color-picker-container">
-            <!-- <input class="particle-count" value="0"> -->
-            <input type="color" id="cs4" name="head" class="color-picker" value="#e66465">
-        </div>
-        <div class="color-picker-container">
-            <!-- <input class="particle-count" value="0"> -->
-            <input type="color" id="cs5" name="head" class="color-picker" value="#e66465">
-        </div>
-        
     </div>
 
-    <div id="settings2">
- 
-        
-    </div>
-
+    <!-- right info gutter (unchanged id, just styled) -->
+    <div id="settings2"></div>
 
     <script src="./js/globals.js"></script>
     <script src="./js/framework.js"></script>
