@@ -28,6 +28,13 @@
         <!-- optional headline -->
         <div class="panel-title">Controls</div>
 
+        <!-- TRAIL / CLEAR AMOUNT (0..1) -->
+        <div class="slider-container">
+            <input id="inpFade" class="slider-input" value="1" oninput="fadeInpChange()">
+            <input id="slideFade" class="slider" step="0.15" type="range" value="1" min="0" max="1">
+            <div class="color-container">Trail fade (0–1)</div>
+        </div>
+
         <!-- particles-per-color & particle-size sliders -->
         <div class="slider-container">
             <input id="inpCount" class="slider-input" value="200" oninput="countInpChange()">
@@ -36,7 +43,7 @@
         </div>
 
         <div class="slider-container">
-            <input id="inpSize" class="slider-input" value="5" oninput="sizeInpChange()">
+            <input id="inpSize" class="slider-input" value="2" oninput="sizeInpChange()">
             <input id="slideSize" class="slider" step="1" type="range" value="5" min="1" max="20">
             <div class="color-container">Particle size</div>
         </div>

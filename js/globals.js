@@ -35,9 +35,10 @@ IMG_BUTTON.src = IMG_PATH + "button.png";
 
 // Particles
 var RANDOM_START_BORDER_BUFFER = 20
-let PARTICLE_SIZE = 5
+let PARTICLE_SIZE = 2
 let PARTICLES_PER_GROUP = 200
 const CELL_SIZE = Math.floor(Math.random() * 4) + 3
+let TRAIL_FADE = 0.15; // 1=fully clear each frame, 0=never clear (long trails)
 
 var particles = []
 

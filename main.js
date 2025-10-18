@@ -77,7 +77,16 @@ function handleMouseMove() {
 //----------------------------------------------------------------------------------------------------
 // Draw Foreground
 function drawFront() {
-    ctxf.clearRect(0, 0, cW, cH);
+    // Fade the previous frame to create a trailing effect
+    if (TRAIL_FADE >= 0.999) {
+        // fully clear (default behavior)
+        ctxf.clearRect(0, 0, cW, cH);
+    } else {
+        // draw a translucent black rectangle to gradually clear
+        ctxf.globalCompositeOperation = 'source-over';
+        ctxf.fillStyle = `rgba(0,0,0,${TRAIL_FADE})`;
+        ctxf.fillRect(0, 0, cW, cH);
+    }
 
     // Batch draw by color to reduce state churn & calls
     for (let colorId = 1; colorId <= 5; colorId++) {
@@ -412,7 +421,19 @@ function sizeInpChange() {
     PARTICLE_SIZE = v;
 }
 
-
+// Trail fade slider (0..1): controls how much is cleared each frame
+document.getElementById("slideFade").oninput = function () {
+    document.getElementById("inpFade").value = this.value;
+    TRAIL_FADE = parseFloat(this.value) || 0;
+};
+function fadeInpChange() {
+    let v = parseFloat(document.getElementById("inpFade").value);
+    // Clamp to [0,1] just in case
+    if (isNaN(v)) v = 0;
+    v = Math.max(0, Math.min(1, v));
+    document.getElementById("slideFade").value = v;
+    TRAIL_FADE = v;
+}
 
 
 
