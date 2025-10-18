@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AndyHSmith</title>
+    <title>Particle Play</title>
     <link rel="stylesheet" href="main.css">
 </head>
 
@@ -13,7 +13,7 @@
     <canvas id="myCanvasFront"></canvas>
     <canvas id="myCanvasStats"></canvas>
 
-    <!-- top bar (same IDs/handlers, just nicer UI) -->
+    <!-- top bar -->
     <div class="topbar" id="button-container">
         <div class="left">
             <button class="primary" onclick="toggleSettings()">Settings</button>
@@ -23,12 +23,12 @@
         <div class="right hint">tip: press “a” to attract/repel with the mouse</div>
     </div>
 
-    <!-- SETTINGS DRAWER (keeps all original ids/inputs so JS continues to work) -->
+    <!-- SETTINGS DRAWER  -->
     <div id="settings1">
         <!-- optional headline -->
         <div class="panel-title">Controls</div>
 
-        <!-- particles-per-color & particle-size sliders (already wired in your JS if you added them) -->
+        <!-- particles-per-color & particle-size sliders -->
         <div class="slider-container">
             <input id="inpCount" class="slider-input" value="200" oninput="countInpChange()">
             <input id="slideCount" class="slider" step="10" type="range" value="200" min="0" max="1000">
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <!-- ORIGINAL 25 SLIDERS (unchanged markup/ids) -->
+        <!-- ORIGINAL 25 SLIDERS -->
         <div class="slider-container">
             <input id="inp1" class="slider-input" value="0" oninput="inpChange(1)">
             <input id="slide1" class="slider" step="0.1" type="range" value="0" min="-1" max="1">
@@ -302,7 +302,7 @@
             </div>
         </div>
 
-        <!-- COLOR PICKERS (unchanged IDs; grouped for layout only) -->
+        <!-- COLOR PICKERS -->
         <div class="panel-title" style="margin-top:8px;">Colors</div>
         <div class="color-pickers-row">
             <div class="color-picker-container">
@@ -323,7 +323,7 @@
         </div>
     </div>
 
-    <!-- right info gutter (unchanged id, just styled) -->
+    <!-- right info gutter  -->
     <div id="settings2"></div>
 
     <script src="./js/globals.js"></script>
