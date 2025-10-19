@@ -16,9 +16,9 @@
     <!-- top bar -->
     <div class="topbar" id="button-container">
         <div class="left">
-            <button class="primary" onclick="toggleSettings()">Settings</button>
-            <button onclick="randomForces()">Random</button>
-            <button onclick="setUpParticles()">Disperse</button>
+            <button class="primary" onclick="toggleSettings()"><u>S</u>ettings</button>
+            <button onclick="randomForces()"><u>R</u>eload</button>
+            <button onclick="setUpParticles()"><u>D</u>isperse</button>
         </div>
         <div class="right hint">tip: press “a” to attract/repel with the mouse</div>
     </div>
@@ -31,21 +31,21 @@
         <!-- TRAIL / CLEAR AMOUNT (0..1) -->
         <div class="slider-container">
             <input id="inpFade" class="slider-input" value="1" oninput="fadeInpChange()">
-            <input id="slideFade" class="slider" step="0.15" type="range" value="1" min="0" max="1">
-            <div class="color-container">Trail fade (0–1)</div>
+            <input id="slideFade" class="slider" step="0.01" type="range" value="1" min="0" max="1">
+            <div class="color-container">Trail Fade</div>
         </div>
 
         <!-- particles-per-color & particle-size sliders -->
         <div class="slider-container">
             <input id="inpCount" class="slider-input" value="200" oninput="countInpChange()">
             <input id="slideCount" class="slider" step="10" type="range" value="200" min="0" max="1000">
-            <div class="color-container">Particles / color</div>
+            <div class="color-container">Particles Count</div>
         </div>
 
         <div class="slider-container">
             <input id="inpSize" class="slider-input" value="2" oninput="sizeInpChange()">
             <input id="slideSize" class="slider" step="1" type="range" value="5" min="1" max="20">
-            <div class="color-container">Particle size</div>
+            <div class="color-container">Particle Size</div>
         </div>
 
         <!-- mouse force -->

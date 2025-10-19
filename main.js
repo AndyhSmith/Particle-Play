@@ -546,4 +546,9 @@ function toggleSettings() {
     // document.getElementById("settings1").style.display = "none";
 }
 
-
+document.addEventListener("keydown", (e) => {
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+    if (e.key === "s" || e.key === "S") toggleSettings();
+    if (e.key === "r" || e.key === "R") randomForces();
+    if (e.key === "d" || e.key === "D") setUpParticles();
+});
